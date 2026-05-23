@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CertPro — Professional Certification Exams</title>
+<meta name="description" content="Industry-recognized certification exams. Earn verifiable credentials employers trust.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0D0D0D;--ink2:#1a1a1a;--ink3:#2d2d2d;
+  --gold:#B8902A;--gold2:#D4A94E;--gold3:#F0C96E;
+  --cream:#FAF7F2;--cream2:#F2EDE4;--cream3:#E8E0D4;
+  --white:#FFFFFF;--muted:#6B6460;--light:#9E9590;
+  --border:#DDD5C8;--success:#2E7D4F;--danger:#C0392B;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif}
+
+/* NAV */
+nav{background:var(--ink);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:68px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
+.logo-emblem{width:36px;height:36px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--ink);font-size:18px;letter-spacing:-1px}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--white);letter-spacing:0.5px}
+.logo-name em{color:var(--gold2);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:0.5rem}
+.nav-btn{background:none;border:none;color:#9E9590;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:8px 14px;cursor:pointer;border-radius:3px;transition:color 0.15s;letter-spacing:0.3px}
+.nav-btn:hover,.nav-btn.active{color:var(--white)}
+.nav-cta{background:var(--gold);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:8px 18px;border:none;border-radius:3px;cursor:pointer;letter-spacing:0.5px;text-transform:uppercase;transition:background 0.15s}
+.nav-cta:hover{background:var(--gold2)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* ===== HOME ===== */
+.hero{background:var(--ink);min-height:560px;display:flex;align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,144,42,0.12) 0%, transparent 70%),
+  repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.02) 60px),
+  repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.02) 60px)}
+.hero-inner{position:relative;max-width:720px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(184,144,42,0.15);border:1px solid rgba(184,144,42,0.35);color:var(--gold3);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;margin-bottom:2rem}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--gold3);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,4.5rem);font-weight:600;color:var(--white);line-height:1.08;margin-bottom:1.5rem;letter-spacing:-0.5px}
+.hero h1 span{color:var(--gold2)}
+.hero p{color:#9E9590;font-size:1.05rem;line-height:1.75;max-width:500px;margin:0 auto 2.5rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-hero-primary{background:var(--gold);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;padding:13px 28px;border:none;cursor:pointer;transition:background 0.15s}
+.btn-hero-primary:hover{background:var(--gold2)}
+.btn-hero-secondary{background:transparent;color:var(--white);font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:0.5px;padding:13px 28px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:border-color 0.15s}
+.btn-hero-secondary:hover{border-color:rgba(255,255,255,0.5)}
+
+.cats-strip{background:var(--ink2);border-top:1px solid rgba(184,144,42,0.2);border-bottom:1px solid rgba(184,144,42,0.15);padding:1rem 2.5rem;display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.cat-chip{display:flex;align-items:center;gap:7px;color:#6B6460;font-size:12px;font-weight:500;letter-spacing:0.5px;cursor:pointer;padding:3px 0;border-bottom:2px solid transparent;transition:all 0.15s}
+.cat-chip:hover,.cat-chip.active-cat{color:var(--gold2);border-bottom-color:var(--gold)}
+.cat-dot{width:7px;height:7px;border-radius:50%}
+
+.catalog{max-width:1180px;margin:0 auto;padding:4rem 2rem}
+.catalog-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+.catalog-title .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+.catalog-title h2{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--ink)}
+.filter-pills{display:flex;gap:0.4rem;flex-wrap:wrap}
+.filter-pill{background:var(--white);border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all 0.15s}
+.filter-pill:hover{border-color:var(--gold);color:var(--ink)}
+.filter-pill.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.5rem}
+.cert-card{background:var(--white);border:1px solid var(--border);cursor:pointer;transition:all 0.2s;position:relative}
+.cert-card:hover{border-color:var(--gold);box-shadow:0 8px 32px rgba(0,0,0,0.08)}
+.cert-card-top{padding:1.75rem 1.75rem 1.25rem;border-bottom:1px solid var(--cream3)}
+.cert-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;margin-bottom:1rem}
+.cert-acronym{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;line-height:1;margin-bottom:0.5rem}
+.cert-card-body{padding:1.25rem 1.75rem 1.75rem}
+.cert-name{font-size:0.9rem;font-weight:600;color:var(--ink);margin-bottom:0.5rem}
+.cert-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:1.25rem}
+.cert-meta-row{display:flex;gap:1.5rem;margin-bottom:1.25rem}
+.cert-meta-item{font-size:11px;color:var(--muted)}
+.cert-meta-item strong{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.cert-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--cream3)}
+.cert-price{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--ink)}
+.cert-price sub{font-size:0.7rem;font-family:'DM Sans',sans-serif;font-weight:400;color:var(--muted);vertical-align:baseline}
+.btn-begin{background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:9px 18px;border:none;cursor:pointer;transition:background 0.15s}
+.btn-begin:hover{background:var(--ink3)}
+
+/* card themes */
+.theme-pm .cert-card-top{background:#F0F5E8}
+.theme-pm .cert-tag{background:#C8DDA0;color:#2D4A0A}
+.theme-pm .cert-acronym{color:#3A5F10}
+.theme-cyber .cert-card-top{background:#E8EEF5}
+.theme-cyber .cert-tag{background:#AABBDD;color:#1A2E50}
+.theme-cyber .cert-acronym{color:#1A3668}
+.theme-cloud .cert-card-top{background:#EEE8F5}
+.theme-cloud .cert-tag{background:#CCBBEE;color:#2D1A50}
+.theme-cloud .cert-acronym{color:#3D1F6E}
+.theme-process .cert-card-top{background:#F5EEE0}
+.theme-process .cert-tag{background:#E8C87A;color:#4A2E00}
+.theme-process .cert-acronym{color:#5A3800}
+.theme-ai .cert-card-top{background:#F5E8E8}
+.theme-ai .cert-tag{background:#E8AAAA;color:#500A0A}
+.theme-ai .cert-acronym{color:#6E1414}
+
+/* PRICING */
+.pricing-section{background:var(--ink);padding:5rem 2rem}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-title{text-align:center;margin-bottom:3rem}
+.pricing-title .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem}
+.pricing-title h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:600;color:var(--white)}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:rgba(255,255,255,0.08)}
+.pricing-card{background:var(--ink2);padding:2.5rem 2rem;position:relative}
+.pricing-card.featured{background:rgba(184,144,42,0.08);border:1px solid rgba(184,144,42,0.3)}
+.pricing-best{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 14px;white-space:nowrap}
+.pricing-card h3{font-size:0.95rem;font-weight:600;color:var(--white);margin-bottom:0.5rem}
+.pricing-card p{font-size:12px;color:#6B6460;line-height:1.6;margin-bottom:1.5rem}
+.pricing-amt{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:var(--white);line-height:1}
+.pricing-period{font-size:13px;color:#6B6460;font-family:'DM Sans',sans-serif;font-weight:300;margin-bottom:1.5rem}
+.pricing-list{list-style:none;margin-bottom:2rem;display:flex;flex-direction:column;gap:10px}
+.pricing-list li{font-size:12px;color:#9E9590;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.pricing-list li::before{content:'—';color:var(--gold);flex-shrink:0;margin-top:1px}
+.btn-pricing{width:100%;padding:12px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.15s}
+.btn-pricing.gold{background:var(--gold);color:var(--ink)}
+.btn-pricing.gold:hover{background:var(--gold2)}
+.btn-pricing.outline{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.2)}
+.btn-pricing.outline:hover{border-color:var(--white)}
+
+.trust-footer{background:var(--ink2);border-top:1px solid rgba(184,144,42,0.15);padding:2rem;text-align:center}
+.trust-stats{display:flex;justify-content:center;gap:4rem;flex-wrap:wrap;margin-top:1rem}
+.trust-stat strong{display:block;font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold2)}
+.trust-stat span{font-size:11px;color:#6B6460;letter-spacing:0.5px;text-transform:uppercase}
+
+/* ===== PAYMENT PAGE ===== */
+.payment-layout{max-width:480px;margin:0 auto;padding:3rem 2rem}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:2rem;background:none;border:none}
+.back-link:hover{color:var(--ink)}
+.payment-box{background:var(--white);border:1px solid var(--border)}
+.payment-box-head{padding:2rem;border-bottom:1px solid var(--cream3);text-align:center}
+.payment-box-head h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;margin-bottom:0.25rem}
+.payment-box-head p{font-size:12px;color:var(--muted)}
+.payment-box-body{padding:2rem}
+.order-line{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--muted)}
+.order-total{display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--ink);padding:12px 0 0;margin-top:8px;border-top:1px solid var(--border)}
+.order-summary{background:var(--cream);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.75rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.form-input{width:100%;padding:10px 12px;border:1px solid var(--border);background:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);transition:border-color 0.15s;outline:none}
+.form-input:focus{border-color:var(--gold)}
+.card-icons{display:flex;gap:5px;margin-bottom:8px}
+.card-icon{background:var(--cream2);border:1px solid var(--border);padding:3px 7px;font-size:9px;font-weight:700;color:var(--muted)}
+.stripe-element-wrap{padding:10px 12px;border:1px solid var(--border);background:var(--white);min-height:42px;transition:border-color 0.15s}
+.stripe-element-wrap.focused{border-color:var(--gold)}
+#card-errors{color:var(--danger);font-size:12px;margin-top:6px}
+.btn-pay{width:100%;padding:14px;background:var(--gold);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border:none;cursor:pointer;margin-top:0.5rem;transition:background 0.15s}
+.btn-pay:hover:not(:disabled){background:var(--gold2)}
+.btn-pay:disabled{opacity:0.6;cursor:not-allowed}
+.secure-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:1rem;font-size:11px;color:var(--light)}
+.stripe-logo{font-size:10px;background:var(--cream2);border:1px solid var(--border);padding:2px 8px;color:var(--muted)}
+
+/* stripe payment link section */
+.or-divider{text-align:center;margin:1.5rem 0;position:relative}
+.or-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+.or-divider span{background:var(--white);padding:0 1rem;font-size:11px;color:var(--muted);position:relative;letter-spacing:1px;text-transform:uppercase}
+.payment-link-section{background:var(--cream);border:1px solid var(--border);padding:1.25rem;text-align:center;margin-top:0.5rem}
+.payment-link-section p{font-size:12px;color:var(--muted);margin-bottom:0.75rem;line-height:1.5}
+.btn-stripe-link{display:inline-block;background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:10px 20px;text-decoration:none;transition:background 0.15s}
+.btn-stripe-link:hover{background:var(--ink3)}
+
+/* ===== EXAM ===== */
+.exam-header{background:var(--ink);padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-bottom:2px solid var(--gold)}
+.exam-title-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--white);font-weight:500}
+.exam-meta{display:flex;align-items:center;gap:1.5rem}
+.exam-timer{font-size:1rem;font-weight:600;color:var(--gold2);background:rgba(184,144,42,0.12);padding:5px 14px;border:1px solid rgba(184,144,42,0.25);letter-spacing:1px}
+.exam-prog-wrap{min-width:150px}
+.exam-prog-label{font-size:11px;color:#6B6460;margin-bottom:4px;letter-spacing:0.3px}
+.exam-prog-bar{height:3px;background:rgba(255,255,255,0.08)}
+.exam-prog-fill{height:100%;background:var(--gold);transition:width 0.4s}
+.exam-body{max-width:760px;margin:0 auto;padding:2.5rem 2rem}
+.question-card{background:var(--white);border:1px solid var(--border);padding:2.5rem;margin-bottom:1.5rem}
+.q-number{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.q-text{font-size:1.05rem;color:var(--ink);line-height:1.75;font-weight:400;margin-bottom:2rem}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt-btn{background:var(--cream);border:1px solid var(--border);padding:12px 16px;text-align:left;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.15s;width:100%}
+.opt-btn:hover{border-color:var(--gold);background:rgba(184,144,42,0.04)}
+.opt-btn.selected{border-color:var(--gold);background:rgba(184,144,42,0.08)}
+.opt-btn.correct{border-color:var(--success);background:rgba(46,125,79,0.06);color:var(--success)}
+.opt-btn.wrong{border-color:var(--danger);background:rgba(192,57,43,0.06);color:var(--danger)}
+.opt-letter{width:26px;height:26px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--white)}
+.opt-btn.selected .opt-letter{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.opt-btn.correct .opt-letter{background:var(--success);border-color:var(--success);color:var(--white)}
+.opt-btn.wrong .opt-letter{background:var(--danger);border-color:var(--danger);color:var(--white)}
+.explanation{background:var(--cream);border-left:3px solid var(--gold);padding:1rem 1.25rem;margin-top:1.25rem;display:none}
+.explanation.show{display:block}
+.explanation p{font-size:13px;color:var(--muted);line-height:1.7}
+.exam-nav{display:flex;justify-content:space-between;align-items:center}
+.btn-exam{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:10px 22px;cursor:pointer;border:none;transition:all 0.15s}
+.btn-skip{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-skip:hover{border-color:var(--ink);color:var(--ink)}
+.btn-next{background:var(--ink);color:var(--white)}
+.btn-next:hover{background:var(--ink3)}
+.btn-submit{background:var(--gold);color:var(--ink)}
+.btn-submit:hover{background:var(--gold2)}
+.loading-state{text-align:center;padding:3rem}
+.spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-state p{font-size:13px;color:var(--muted)}
+
+/* ===== RESULTS ===== */
+.results-hero{background:var(--ink);padding:3.5rem 2rem;text-align:center}
+.score-ring-wrap{width:120px;height:120px;margin:0 auto 1.5rem;position:relative}
+.score-ring-wrap svg{width:100%;height:100%}
+.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--white)}
+.score-lbl{font-size:9px;color:#6B6460;letter-spacing:1.5px;text-transform:uppercase}
+.result-verdict{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold2);margin-bottom:0.5rem}
+.result-sub{font-size:13px;color:#6B6460;line-height:1.6}
+.results-body{max-width:660px;margin:0 auto;padding:2.5rem 2rem}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.stat-box{background:var(--white);border:1px solid var(--border);padding:1.25rem;text-align:center}
+.stat-box strong{display:block;font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--ink)}
+.stat-box span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.results-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn-result-primary{background:var(--gold);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer}
+.btn-result-primary:hover{background:var(--gold2)}
+.btn-result-secondary{background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer}
+.btn-result-secondary:hover{background:var(--ink3)}
+.review-section h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--ink);margin-bottom:1rem}
+.review-item{background:var(--white);border:1px solid var(--border);border-left:3px solid var(--border);padding:1rem 1.25rem;margin-bottom:0.6rem}
+.review-item.correct{border-left-color:var(--success)}
+.review-item.wrong{border-left-color:var(--danger)}
+.review-item-q{font-size:13px;color:var(--ink);margin-bottom:0.35rem;font-weight:500}
+.review-item-s{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+
+/* ===== CERTIFICATE ===== */
+.cert-page{max-width:860px;margin:0 auto;padding:2.5rem 2rem}
+.cert-page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.cert-page-header h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--ink)}
+.cert-actions-btns{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-cert{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:9px 18px;cursor:pointer;border:none;transition:all 0.15s}
+.btn-cert.dark{background:var(--ink);color:var(--white)}
+.btn-cert.dark:hover{background:var(--ink3)}
+.btn-cert.gold{background:var(--gold);color:var(--ink)}
+.btn-cert.gold:hover{background:var(--gold2)}
+.certificate-doc{background:var(--white);border:1px solid var(--border);aspect-ratio:1.414;width:100%;position:relative;overflow:hidden}
+.cert-outer{position:absolute;inset:14px;border:1.5px solid var(--gold)}
+.cert-inner{position:absolute;inset:20px;border:0.5px solid rgba(184,144,42,0.3)}
+.cert-corner{position:absolute;width:32px;height:32px}
+.cert-corner svg{width:100%;height:100%}
+.cert-corner.tl{top:10px;left:10px}
+.cert-corner.tr{top:10px;right:10px;transform:scaleX(-1)}
+.cert-corner.bl{bottom:10px;left:10px;transform:scaleY(-1)}
+.cert-corner.br{bottom:10px;right:10px;transform:scale(-1)}
+.cert-content{position:absolute;inset:36px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:0.75rem}
+.cert-org{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cert-emblem{width:40px;height:40px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--gold);font-size:18px}
+.cert-org-name{font-family:'Cormorant Garamond',serif;font-size:clamp(0.85rem,1.8vw,1.1rem);font-weight:600;color:var(--ink);letter-spacing:1px;text-transform:uppercase}
+.cert-org-sub{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.cert-main{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cert-presents{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.cert-holder{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:600;color:var(--gold);border-bottom:1px solid var(--gold);padding-bottom:6px;margin:4px 0;line-height:1.1}
+.cert-passed{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:2px 0}
+.cert-cert-name{font-family:'Cormorant Garamond',serif;font-size:clamp(0.9rem,2vw,1.4rem);font-weight:600;color:var(--ink);line-height:1.2}
+.cert-tagline{font-size:8px;color:var(--muted);max-width:65%;line-height:1.5;margin-top:2px}
+.cert-footer-row{display:flex;justify-content:space-between;align-items:flex-end;width:100%}
+.cert-sig-block{text-align:center}
+.cert-sig-line{width:90px;height:1px;background:var(--ink);margin:0 auto 4px}
+.cert-sig-name{font-size:8px;font-weight:600;color:var(--ink);letter-spacing:0.5px;text-transform:uppercase}
+.cert-sig-title{font-size:7px;color:var(--muted)}
+.cert-seal svg{width:52px;height:52px}
+.cert-id-block{text-align:center}
+
+/* ===== LOOKUP ===== */
+.lookup-wrap{max-width:680px;margin:0 auto;padding:4rem 2rem}
+.lookup-hero{text-align:center;margin-bottom:3rem}
+.lookup-hero .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem}
+.lookup-hero h2{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:600;color:var(--ink);margin-bottom:0.5rem}
+.lookup-hero p{font-size:13px;color:var(--muted);line-height:1.7}
+.lookup-box{background:var(--white);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem}
+.lookup-hint{font-size:12px;color:var(--muted);margin-bottom:0.75rem}
+.lookup-row{display:flex;gap:0.75rem}
+.lookup-input{flex:1;padding:11px 14px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color 0.15s}
+.lookup-input:focus{border-color:var(--gold)}
+.btn-lookup{background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:11px 22px;border:none;cursor:pointer;white-space:nowrap}
+.btn-lookup:hover{background:var(--ink3)}
+.lookup-result{background:var(--white);border:1px solid var(--border);overflow:hidden;display:none}
+.lookup-result.show{display:block}
+.lookup-result-head{background:var(--ink);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.lookup-result-head h3{color:var(--white);font-size:0.9rem;font-weight:500}
+.verified-badge{background:rgba(46,125,79,0.2);border:1px solid rgba(46,125,79,0.4);color:#5ACC8A;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 12px}
+.lookup-fields{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1.5rem}
+.lookup-field label{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;display:block}
+.lookup-field p{font-size:13px;color:var(--ink);font-weight:500}
+.demo-ids{background:var(--cream2);border:1px solid var(--border);padding:1.25rem;margin-top:1rem}
+.demo-ids-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem}
+.demo-id-btns{display:flex;flex-wrap:wrap;gap:0.5rem}
+.demo-id-btn{background:var(--white);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);padding:4px 10px;cursor:pointer;transition:all 0.15s}
+.demo-id-btn:hover{border-color:var(--gold);color:var(--ink)}
+
+/* UTILS */
+input,textarea{font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">
+    <div class="logo-emblem">C</div>
+    <span class="logo-name">Cert<em>Pro</em></span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" id="nav-home" onclick="showPage('home');setActive('nav-home')">Home</button>
+    <button class="nav-btn" id="nav-exams" onclick="showPage('exam-select');setActive('nav-exams')">Exams</button>
+    <button class="nav-btn" id="nav-lookup" onclick="showPage('lookup');setActive('nav-lookup')">Verify</button>
+    <button class="nav-cta" onclick="showPage('exam-select');setActive('nav-exams')">Get Certified</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">9 Certifications Available</div>
+      <h1>Your Professional<br><span>Certification</span> Destination</h1>
+      <p>Rigorous AI-powered exams across project management, cybersecurity, cloud, and AI. Earn verifiable credentials that employers trust.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-primary" onclick="showPage('exam-select');setActive('nav-exams')">Browse Exams</button>
+        <button class="btn-hero-secondary" onclick="showPage('lookup');setActive('nav-lookup')">Verify a Certificate</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cats-strip" id="cats-strip">
+    <div class="cat-chip active-cat" onclick="filterCerts('all',this)"><div class="cat-dot" style="background:var(--gold)"></div>All</div>
+    <div class="cat-chip" onclick="filterCerts('pm',this)"><div class="cat-dot" style="background:#6A9A2A"></div>Project Management</div>
+    <div class="cat-chip" onclick="filterCerts('cyber',this)"><div class="cat-dot" style="background:#2A5A9A"></div>Cybersecurity</div>
+    <div class="cat-chip" onclick="filterCerts('cloud',this)"><div class="cat-dot" style="background:#6A2A9A"></div>Cloud</div>
+    <div class="cat-chip" onclick="filterCerts('process',this)"><div class="cat-dot" style="background:#9A6A2A"></div>Process</div>
+    <div class="cat-chip" onclick="filterCerts('ai',this)"><div class="cat-dot" style="background:#9A2A2A"></div>AI & Tech</div>
+  </div>
+
+  <div class="catalog">
+    <div class="catalog-header">
+      <div class="catalog-title">
+        <div class="label">Certification Catalog</div>
+        <h2>Choose Your Path</h2>
+      </div>
+      <div class="filter-pills">
+        <button class="filter-pill active" onclick="filterCerts('all',null,this)">All (9)</button>
+        <button class="filter-pill" onclick="filterCerts('pm',null,this)">PM (3)</button>
+        <button class="filter-pill" onclick="filterCerts('cyber',null,this)">Cyber (2)</button>
+        <button class="filter-pill" onclick="filterCerts('cloud',null,this)">Cloud (1)</button>
+        <button class="filter-pill" onclick="filterCerts('process',null,this)">Process (2)</button>
+        <button class="filter-pill" onclick="filterCerts('ai',null,this)">AI (1)</button>
+      </div>
+    </div>
+
+    <div class="cert-grid" id="cert-grid">
+      <div class="cert-card theme-pm" data-cat="pm" onclick="startExam('PMP')">
+        <div class="cert-card-top"><span class="cert-tag">Project Mgmt</span><div class="cert-acronym">PMP</div></div>
+        <div class="cert-card-body"><div class="cert-name">Project Management Professional</div><div class="cert-desc">PMI's flagship credential covering predictive, agile, and hybrid delivery.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>45 min</strong>Time</div><div class="cert-meta-item"><strong>70%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('PMP')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-pm" data-cat="pm" onclick="startExam('CSM')">
+        <div class="cert-card-top"><span class="cert-tag">Project Mgmt</span><div class="cert-acronym">CSM</div></div>
+        <div class="cert-card-body"><div class="cert-name">Certified Scrum Master</div><div class="cert-desc">Scrum framework, agile principles, and servant leadership excellence.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>35 min</strong>Time</div><div class="cert-meta-item"><strong>74%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('CSM')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-pm" data-cat="pm" onclick="startExam('PRINCE2')">
+        <div class="cert-card-top"><span class="cert-tag">Project Mgmt</span><div class="cert-acronym">P2</div></div>
+        <div class="cert-card-body"><div class="cert-name">PRINCE2 Foundation</div><div class="cert-desc">Globally recognized structured project management framework.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>40 min</strong>Time</div><div class="cert-meta-item"><strong>55%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('PRINCE2')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-cyber" data-cat="cyber" onclick="startExam('SecurityPlus')">
+        <div class="cert-card-top"><span class="cert-tag">Cybersecurity</span><div class="cert-acronym">S+</div></div>
+        <div class="cert-card-body"><div class="cert-name">CompTIA Security+</div><div class="cert-desc">Baseline cybersecurity covering threats, risk, and defensive techniques.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>40 min</strong>Time</div><div class="cert-meta-item"><strong>75%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('SecurityPlus')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-cyber" data-cat="cyber" onclick="startExam('CISSP')">
+        <div class="cert-card-top"><span class="cert-tag">Cybersecurity</span><div class="cert-acronym">CISSP</div></div>
+        <div class="cert-card-body"><div class="cert-name">Certified Info Systems Security Pro</div><div class="cert-desc">Elite security leadership across all eight ISC2 domains.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>45 min</strong>Time</div><div class="cert-meta-item"><strong>70%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$35<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('CISSP')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-cloud" data-cat="cloud" onclick="startExam('AWS')">
+        <div class="cert-card-top"><span class="cert-tag">Cloud</span><div class="cert-acronym">AWS</div></div>
+        <div class="cert-card-body"><div class="cert-name">AWS Solutions Architect — Associate</div><div class="cert-desc">Design scalable, highly available systems on AWS.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>45 min</strong>Time</div><div class="cert-meta-item"><strong>72%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('AWS')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-process" data-cat="process" onclick="startExam('LSS')">
+        <div class="cert-card-top"><span class="cert-tag">Process</span><div class="cert-acronym">LSS</div></div>
+        <div class="cert-card-body"><div class="cert-name">Lean Six Sigma Green Belt</div><div class="cert-desc">Process improvement, defect reduction, and DMAIC methodology.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>40 min</strong>Time</div><div class="cert-meta-item"><strong>70%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('LSS')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-process" data-cat="process" onclick="startExam('CBPP')">
+        <div class="cert-card-top"><span class="cert-tag">Process</span><div class="cert-acronym">CBPP</div></div>
+        <div class="cert-card-body"><div class="cert-name">Certified Business Process Professional</div><div class="cert-desc">APQC's certification for business process analysis and design.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>40 min</strong>Time</div><div class="cert-meta-item"><strong>70%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('CBPP')">Begin</button></div></div>
+      </div>
+      <div class="cert-card theme-ai" data-cat="ai" onclick="startExam('CPMAI')">
+        <div class="cert-card-top"><span class="cert-tag">AI & Tech</span><div class="cert-acronym">CPMAI</div></div>
+        <div class="cert-card-body"><div class="cert-name">Certified Project Manager — AI</div><div class="cert-desc">Leading AI and machine learning initiatives and governance.</div><div class="cert-meta-row"><div class="cert-meta-item"><strong>15</strong>Questions</div><div class="cert-meta-item"><strong>40 min</strong>Time</div><div class="cert-meta-item"><strong>70%</strong>Pass</div></div><div class="cert-footer"><div class="cert-price">$25<sub> / exam</sub></div><button class="btn-begin" onclick="event.stopPropagation();startExam('CPMAI')">Begin</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing-section">
+    <div class="pricing-inner">
+      <div class="pricing-title">
+        <div class="label">Pricing</div>
+        <h2>Simple & Transparent</h2>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Certification Exam</h3>
+          <p>AI-powered exam with instant scoring and a certificate upon passing.</p>
+          <div class="pricing-amt">$25</div>
+          <div class="pricing-period">per exam</div>
+          <ul class="pricing-list">
+            <li>15 AI-generated questions</li>
+            <li>Instant feedback & explanations</li>
+            <li>Downloadable PDF certificate</li>
+            <li>Score report included</li>
+          </ul>
+          <button class="btn-pricing outline" onclick="showPage('exam-select');setActive('nav-exams')">Choose an Exam</button>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-best">Most Popular</div>
+          <h3>Certificate Hosting</h3>
+          <p>Host your certificate so employers can verify it anytime via our lookup portal.</p>
+          <div class="pricing-amt">$5</div>
+          <div class="pricing-period">per year</div>
+          <ul class="pricing-list">
+            <li>Permanent public registry entry</li>
+            <li>Unique verifiable certificate ID</li>
+            <li>Employer lookup portal access</li>
+            <li>Renewal reminders by email</li>
+          </ul>
+          <button class="btn-pricing gold" onclick="showPage('exam-select');setActive('nav-exams')">Get Certified First</button>
+        </div>
+        <div class="pricing-card">
+          <h3>CISSP Premium</h3>
+          <p>Elite-difficulty exam for security architects with full 8-domain coverage.</p>
+          <div class="pricing-amt">$35</div>
+          <div class="pricing-period">per exam</div>
+          <ul class="pricing-list">
+            <li>Advanced difficulty questions</li>
+            <li>All 8 CISSP domains covered</li>
+            <li>Premium certificate design</li>
+            <li>Hosting add-on available</li>
+          </ul>
+          <button class="btn-pricing outline" onclick="startExam('CISSP')">Start CISSP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-footer">
+    <p style="font-size:11px;color:#6B6460;letter-spacing:1px;text-transform:uppercase">Trusted by professionals worldwide</p>
+    <div class="trust-stats">
+      <div class="trust-stat"><strong>12,400+</strong><span>Exams Taken</span></div>
+      <div class="trust-stat"><strong>8,900+</strong><span>Certificates Issued</span></div>
+      <div class="trust-stat"><strong>9</strong><span>Certifications</span></div>
+      <div class="trust-stat"><strong>94%</strong><span>Recommend</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM SELECT -->
+<div id="page-exam-select" class="page">
+  <div style="background:var(--ink);padding:3rem 2rem;text-align:center;border-bottom:2px solid var(--gold)">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem">Step 1 of 2</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--white)">Select Your Certification</h2>
+    <p style="font-size:12px;color:#6B6460;margin-top:0.5rem">$25 per exam · CISSP $35 · Certificate issued upon passing</p>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:2.5rem 2rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem" id="exam-select-grid">
+      <!-- filled by JS -->
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <button id="proceed-btn" onclick="proceedToPayment()" style="background:var(--gold);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:13px 28px;border:none;cursor:pointer;opacity:0.4;pointer-events:none;transition:all 0.15s">Continue to Payment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div id="page-payment" class="page">
+  <div class="payment-layout">
+    <button class="back-link" onclick="showPage('exam-select');setActive('nav-exams')">← Back to exam selection</button>
+    <div class="payment-box">
+      <div class="payment-box-head">
+        <h2>Complete Your Purchase</h2>
+        <p>Secure checkout — powered by Stripe</p>
+      </div>
+      <div class="payment-box-body">
+        <div class="order-summary" id="order-summary"></div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="pay-name" placeholder="Jane Smith">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="pay-email" placeholder="jane@company.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Card Details</label>
+          <div class="card-icons"><div class="card-icon">VISA</div><div class="card-icon">MC</div><div class="card-icon">AMEX</div></div>
+          <div class="stripe-element-wrap" id="card-element"></div>
+          <div id="card-errors"></div>
+        </div>
+        <button class="btn-pay" id="btn-pay" onclick="processPayment()">Pay <span id="pay-amt-display">$25.00</span> — Start Exam</button>
+        <div class="secure-badge">🔒 256-bit SSL &nbsp;<div class="stripe-logo">Powered by Stripe</div></div>
+        <div class="or-divider"><span>or</span></div>
+        <div class="payment-link-section">
+          <p>Prefer to pay via a hosted Stripe page? Click below — then return here and start your exam.</p>
+          <a id="stripe-payment-link" href="#" target="_blank" class="btn-stripe-link">Pay via Stripe →</a>
+          <div style="margin-top:1rem">
+            <button onclick="bypassPaymentForExam()" style="background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline">I've already paid — start my exam</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM -->
+<div id="page-exam" class="page">
+  <div class="exam-header">
+    <div class="exam-title-text" id="exam-title">Certification Exam</div>
+    <div class="exam-meta">
+      <div class="exam-prog-wrap">
+        <div class="exam-prog-label" id="prog-label">Question 1 of 15</div>
+        <div class="exam-prog-bar"><div class="exam-prog-fill" id="prog-fill" style="width:6.6%"></div></div>
+      </div>
+      <div class="exam-timer" id="timer">45:00</div>
+    </div>
+  </div>
+  <div class="exam-body">
+    <div class="loading-state" id="exam-loading"><div class="spinner"></div><p>Generating your exam with AI...</p></div>
+    <div id="exam-question" style="display:none">
+      <div class="question-card">
+        <div class="q-number" id="q-num">Question 1 of 15</div>
+        <div class="q-text" id="q-text"></div>
+        <div class="options" id="q-opts"></div>
+        <div class="explanation" id="q-expl"><p id="q-expl-text"></p></div>
+      </div>
+      <div class="exam-nav">
+        <button class="btn-exam btn-skip" id="btn-skip" onclick="skipQ()">Skip</button>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn-exam btn-next" id="btn-next" onclick="nextQ()" style="display:none">Next Question</button>
+          <button class="btn-exam btn-submit" id="btn-submit" onclick="submitExam()" style="display:none">Submit Exam</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="page-results" class="page">
+  <div class="results-hero">
+    <div class="score-ring-wrap">
+      <svg viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="7"/>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#B8902A" stroke-width="7" stroke-linecap="round" id="score-ring" stroke-dasharray="0 327"/>
+      </svg>
+      <div class="score-inner"><div class="score-num" id="score-pct">0%</div><div class="score-lbl">Score</div></div>
+    </div>
+    <div class="result-verdict" id="result-verdict"></div>
+    <div class="result-sub" id="result-sub"></div>
+  </div>
+  <div class="results-body">
+    <div class="stat-row">
+      <div class="stat-box"><strong id="r-correct">0</strong><span>Correct</span></div>
+      <div class="stat-box"><strong id="r-wrong">0</strong><span>Incorrect</span></div>
+      <div class="stat-box"><strong id="r-skipped">0</strong><span>Skipped</span></div>
+    </div>
+    <div class="results-actions">
+      <button class="btn-result-primary" id="view-cert-btn" onclick="generateCert()" style="display:none">View My Certificate</button>
+      <button class="btn-result-secondary" onclick="showPage('exam-select');setActive('nav-exams')">Take Another Exam</button>
+    </div>
+    <div class="review-section"><h3>Question Review</h3><div id="review-list"></div></div>
+  </div>
+</div>
+
+<!-- CERTIFICATE -->
+<div id="page-cert" class="page">
+  <div class="cert-page">
+    <div class="cert-page-header">
+      <h2>Your Certificate</h2>
+      <div class="cert-actions-btns">
+        <button class="btn-cert dark" onclick="window.print()">Download PDF</button>
+        <button class="btn-cert gold" onclick="showHostModal()">Host Certificate — $5/yr</button>
+      </div>
+    </div>
+    <div class="certificate-doc">
+      <div class="cert-outer"></div>
+      <div class="cert-inner"></div>
+      <div class="cert-corner tl"><svg viewBox="0 0 32 32"><path d="M2 30L2 2L30 2" fill="none" stroke="#B8902A" stroke-width="1.5"/><circle cx="2" cy="2" r="3" fill="#B8902A"/></svg></div>
+      <div class="cert-corner tr"><svg viewBox="0 0 32 32"><path d="M2 30L2 2L30 2" fill="none" stroke="#B8902A" stroke-width="1.5"/><circle cx="2" cy="2" r="3" fill="#B8902A"/></svg></div>
+      <div class="cert-corner bl"><svg viewBox="0 0 32 32"><path d="M2 30L2 2L30 2" fill="none" stroke="#B8902A" stroke-width="1.5"/><circle cx="2" cy="2" r="3" fill="#B8902A"/></svg></div>
+      <div class="cert-corner br"><svg viewBox="0 0 32 32"><path d="M2 30L2 2L30 2" fill="none" stroke="#B8902A" stroke-width="1.5"/><circle cx="2" cy="2" r="3" fill="#B8902A"/></svg></div>
+      <div class="cert-content">
+        <div class="cert-org">
+          <div class="cert-emblem">C</div>
+          <div class="cert-org-name">CertPro</div>
+          <div class="cert-org-sub">Professional Certification Authority</div>
+        </div>
+        <div class="cert-main">
+          <div class="cert-presents">This Certifies That</div>
+          <div class="cert-holder" id="cert-holder">Jane Smith</div>
+          <div class="cert-passed">Has Successfully Passed the</div>
+          <div class="cert-cert-name" id="cert-name">Certification Exam</div>
+          <div class="cert-tagline" id="cert-tagline">Demonstrating the knowledge and professional competencies required for certification.</div>
+        </div>
+        <div class="cert-footer-row">
+          <div class="cert-sig-block"><div class="cert-sig-line"></div><div class="cert-sig-name">Dr. Elaine Whitmore</div><div class="cert-sig-title">Certification Director</div></div>
+          <div class="cert-seal"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none" stroke="#B8902A" stroke-width="1.5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#B8902A" stroke-width="0.5"/><text x="26" y="22" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="7" font-weight="700" fill="#0D0D0D">CERT</text><text x="26" y="30" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="6" fill="#B8902A">PRO</text><text x="26" y="37" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="4" fill="#6B6460">VERIFIED</text></svg></div>
+          <div class="cert-id-block"><div class="cert-sig-line"></div><div class="cert-sig-name" id="cert-date-disp">May 2026</div><div class="cert-sig-title">Date Issued</div><div style="font-size:7px;color:var(--muted);margin-top:2px" id="cert-id-disp">ID: CPM-000000</div></div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:1rem">Certificate ID: <strong id="cert-id-text">CPM-000000</strong> — Host for $5/year for employer verification.</p>
+  </div>
+
+  <!-- Host modal -->
+  <div id="host-modal" style="display:none;position:fixed;inset:0;background:rgba(13,13,13,0.7);z-index:200;align-items:center;justify-content:center;padding:2rem">
+    <div style="background:var(--white);border:1px solid var(--border);padding:2.5rem;max-width:400px;width:100%">
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:0.5rem">Host Your Certificate</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:1.5rem">Make your certificate permanently verifiable. Employers can look up your ID anytime to confirm authenticity.</p>
+      <div style="background:var(--cream);border:1px solid var(--border);padding:1rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700">$5.00</span>
+        <span style="font-size:12px;color:var(--muted)">per year</span>
+      </div>
+      <div style="display:flex;gap:0.75rem">
+        <button onclick="hideHostModal()" style="flex:1;padding:11px;background:transparent;color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">Cancel</button>
+        <a id="host-payment-link" href="#" target="_blank" style="flex:1;padding:11px;background:var(--gold);color:var(--ink);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center" onclick="hideHostModal()">Pay $5 & Publish →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOOKUP -->
+<div id="page-lookup" class="page">
+  <div class="lookup-wrap">
+    <div class="lookup-hero">
+      <div class="label">Employer Verification</div>
+      <h2>Verify a Certificate</h2>
+      <p>Enter a CertPro certificate ID to instantly verify the authenticity and current status of any certification.</p>
+    </div>
+    <div class="lookup-box">
+      <div class="lookup-hint">Enter Certificate ID (e.g. CPM-748291)</div>
+      <div class="lookup-row">
+        <input type="text" class="lookup-input" id="lookup-input" placeholder="XXX-XXXXXX" onkeydown="if(event.key==='Enter')lookupCert()">
+        <button class="btn-lookup" onclick="lookupCert()">Verify</button>
+      </div>
+    </div>
+    <div class="lookup-result" id="lookup-result">
+      <div class="lookup-result-head"><h3>Certificate Record Found</h3><div class="verified-badge">Active & Verified</div></div>
+      <div class="lookup-fields">
+        <div class="lookup-field"><label>Certificate Holder</label><p id="lr-name">—</p></div>
+        <div class="lookup-field"><label>Certification</label><p id="lr-cert">—</p></div>
+        <div class="lookup-field"><label>Certificate ID</label><p id="lr-id">—</p></div>
+        <div class="lookup-field"><label>Issue Date</label><p id="lr-date">—</p></div>
+        <div class="lookup-field"><label>Score Achieved</label><p id="lr-score">—</p></div>
+        <div class="lookup-field"><label>Hosting Expires</label><p id="lr-expiry">—</p></div>
+      </div>
+    </div>
+    <div class="demo-ids">
+      <div class="demo-ids-label">Justin Martin's Certificates</div>
+      <div class="demo-id-btns">
+        <button class="demo-id-btn" onclick="document.getElementById('lookup-input').value='CPM-748291';lookupCert()">CPM-748291 (PMP)</button>
+        <button class="demo-id-btn" onclick="document.getElementById('lookup-input').value='CAI-583047';lookupCert()">CAI-583047 (CPMAI)</button>
+        <button class="demo-id-btn" onclick="document.getElementById('lookup-input').value='CCB-916374';lookupCert()">CCB-916374 (CBPP)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — Update these values
+// ============================================================
+const STRIPE_PK = 'YOUR_STRIPE_PUBLISHABLE_KEY';
+const CERTS_JSON_URL = 'https://raw.githubusercontent.com/JustinMartin9d/certpro-gh/main/certs.json';
+const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+const GITHUB_REPO = 'JustinMartin9d/certpro-gh';
+
+// Stripe Payment Links — create these in your Stripe dashboard
+const STRIPE_LINKS = {
+  exam: 'https://buy.stripe.com/test_REPLACE_WITH_EXAM_LINK',
+  hosting: 'https://buy.stripe.com/test_REPLACE_WITH_HOSTING_LINK'
+};
+
+// ============================================================
+const certData = {
+  PMP:{name:'Project Management Professional',full:'Project Management Professional (PMP)',price:25,time:2700,prefix:'CPM',pass:70},
+  CSM:{name:'Certified Scrum Master',full:'Certified Scrum Master (CSM)',price:25,time:2100,prefix:'CSM',pass:74},
+  PRINCE2:{name:'PRINCE2 Foundation',full:'PRINCE2 Foundation',price:25,time:2400,prefix:'P2F',pass:55},
+  SecurityPlus:{name:'CompTIA Security+',full:'CompTIA Security+ (SY0-701)',price:25,time:2400,prefix:'SEC',pass:75},
+  CISSP:{name:'CISSP',full:'Certified Information Systems Security Professional (CISSP)',price:35,time:2700,prefix:'CIS',pass:70},
+  AWS:{name:'AWS Solutions Architect',full:'AWS Certified Solutions Architect — Associate',price:25,time:2700,prefix:'AWS',pass:72},
+  LSS:{name:'Lean Six Sigma Green Belt',full:'Lean Six Sigma Green Belt (LSSGB)',price:25,time:2400,prefix:'LSS',pass:70},
+  CBPP:{name:'Certified Business Process Professional',full:'Certified Business Process Professional (CBPP)',price:25,time:2400,prefix:'CCB',pass:70},
+  CPMAI:{name:'Certified Project Manager — AI',full:'Certified Project Manager — AI (CPMAI)',price:25,time:2400,prefix:'CAI',pass:70}
+};
+
+let currentCert='PMP', selectedExam=null, currentQ=0, questions=[], answers=[];
+let timerInt=null, timeLeft=2700, userName='', userEmail='', certID='', examScore=0;
+let stripeCard=null, stripeObj=null, cardMounted=false;
+
+// ---- NAV ----
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='payment') setTimeout(mountCard,300);
+}
+function setActive(id){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(document.getElementById(id)) document.getElementById(id).classList.add('active');
+}
+
+// ---- FILTERS ----
+function filterCerts(cat, chipEl, pillEl){
+  if(chipEl){document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active-cat'));chipEl.classList.add('active-cat');}
+  if(pillEl){document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));pillEl.classList.add('active');}
+  document.querySelectorAll('.cert-card').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';});
+}
+
+// ---- EXAM SELECT ----
+function buildExamSelect(){
+  const grid = document.getElementById('exam-select-grid');
+  grid.innerHTML = '';
+  Object.entries(certData).forEach(([key,d])=>{
+    const div = document.createElement('div');
+    div.id = 'sel-'+key;
+    div.style.cssText='background:var(--white);border:1.5px solid var(--border);padding:1.25rem;cursor:pointer;transition:all 0.15s';
+    div.onclick = ()=>selectExam(key);
+    div.innerHTML = `<div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:4px">${key==='PRINCE2'?'P2':key==='SecurityPlus'?'S+':key}</div><div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px">${d.name}</div><div style="font-size:11px;color:var(--muted);margin-bottom:8px">${d.time/60} min · ${d.pass}% pass</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--ink)">$${d.price}</div>`;
+    grid.appendChild(div);
+  });
+}
+buildExamSelect();
+
+function selectExam(key){
+  document.querySelectorAll('#exam-select-grid > div').forEach(d=>{d.style.borderColor='var(--border)';d.style.background='var(--white)';});
+  const el=document.getElementById('sel-'+key);
+  if(el){el.style.borderColor='var(--gold)';el.style.background='rgba(184,144,42,0.04)';}
+  selectedExam=key;
+  const btn=document.getElementById('proceed-btn');
+  btn.style.opacity='1';btn.style.pointerEvents='auto';
+}
+function proceedToPayment(){
+  if(!selectedExam)return;
+  currentCert=selectedExam;
+  updatePaymentUI();
+  showPage('payment');
+  setActive('');
+}
+function startExam(cert){
+  currentCert=cert; selectedExam=cert;
+  updatePaymentUI();
+  showPage('payment');
+  setActive('');
+}
+function updatePaymentUI(){
+  const d=certData[currentCert];
+  const price=d?d.price:25;
+  document.getElementById('order-summary').innerHTML=`<div class="order-line"><span>${d?d.full:'Exam'}</span><span>$${price}.00</span></div><div class="order-total"><span>Total</span><span>$${price}.00</span></div>`;
+  document.getElementById('pay-amt-display').textContent='$'+price+'.00';
+  const link=document.getElementById('stripe-payment-link');
+  if(link) link.href=STRIPE_LINKS.exam+'?prefilled_price='+price*100;
+}
+
+// ---- STRIPE ----
+function mountCard(){
+  if(cardMounted)return;
+  try{
+    stripeObj=Stripe(STRIPE_PK);
+    const els=stripeObj.elements();
+    stripeCard=els.create('card',{hidePostalCode:true,style:{base:{fontFamily:"'DM Sans',sans-serif",fontSize:'14px',color:'#0D0D0D','::placeholder':{color:'#9E9590'}}}});
+    stripeCard.mount('#card-element');
+    cardMounted=true;
+    stripeCard.on('change',e=>{document.getElementById('card-errors').textContent=e.error?e.error.message:'';});
+    const wrap=document.getElementById('card-element');
+    stripeCard.on('focus',()=>wrap.classList.add('focused'));
+    stripeCard.on('blur',()=>wrap.classList.remove('focused'));
+  }catch(e){console.log('Stripe mount:',e);}
+}
+
+async function processPayment(){
+  const name=document.getElementById('pay-name').value.trim();
+  const email=document.getElementById('pay-email').value.trim();
+  if(!name){alert('Please enter your name.');return;}
+  if(!email){alert('Please enter your email.');return;}
+  if(!stripeCard){alert('Card details not loaded. Please refresh and try again.');return;}
+  userName=name; userEmail=email;
+  const btn=document.getElementById('btn-pay');
+  btn.disabled=true; btn.textContent='Processing...';
+  try{
+    const {paymentMethod,error}=await stripeObj.createPaymentMethod({type:'card',card:stripeCard,billing_details:{name,email}});
+    if(error){document.getElementById('card-errors').textContent=error.message;btn.disabled=false;btn.innerHTML='Pay <span id="pay-amt-display">$'+certData[currentCert].price+'.00</span> — Start Exam';return;}
+    // Payment method created successfully — start exam
+    // In production: send paymentMethod.id to your backend to charge
+    startExamSession();
+  }catch(e){alert('Payment error: '+e.message);btn.disabled=false;btn.innerHTML='Pay <span id="pay-amt-display">$'+certData[currentCert].price+'.00</span> — Start Exam';}
+}
+
+function bypassPaymentForExam(){
+  const name=document.getElementById('pay-name').value.trim()||'Professional';
+  const email=document.getElementById('pay-email').value.trim()||'user@example.com';
+  userName=name; userEmail=email;
+  startExamSession();
+}
+
+// ---- EXAM ----
+function startExamSession(){
+  showPage('exam');
+  const d=certData[currentCert];
+  document.getElementById('exam-title').textContent=(d?d.full:'Exam')+' — Certification Exam';
+  timeLeft=d?d.time:2400;
+  updateTimer();
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0){clearInterval(timerInt);submitExam();}},1000);
+  currentQ=0; questions=[]; answers=[];
+  loadQuestion();
+}
+function updateTimer(){
+  const m=Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s=(timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timer').textContent=m+':'+s;
+}
+async function loadQuestion(){
+  document.getElementById('exam-loading').style.display='block';
+  document.getElementById('exam-question').style.display='none';
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('btn-submit').style.display='none';
+  document.getElementById('btn-skip').style.display='inline-block';
+  document.getElementById('q-expl').classList.remove('show');
+  const n=currentQ+1;
+  document.getElementById('prog-label').textContent=`Question ${n} of 15`;
+  document.getElementById('prog-fill').style.width=((n/15)*100).toFixed(1)+'%';
+  document.getElementById('q-num').textContent=`Question ${n} of 15`;
+  if(questions[currentQ]){renderQ(questions[currentQ]);return;}
+  const d=certData[currentCert];
+  const prompt=`Generate one challenging multiple-choice question for the ${d?d.full:currentCert} certification exam (question ${n} of 15). Make it realistic and exam-accurate.\n\nRespond ONLY with valid JSON, no markdown:\n{"question":"<text>","options":["A. <text>","B. <text>","C. <text>","D. <text>"],"correct":0,"explanation":"<2-3 sentences>"}\n\nThe "correct" field is 0-based index. Vary correct answer placement.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    const data=await r.json();
+    const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const q=JSON.parse(raw);
+    questions[currentQ]=q; renderQ(q);
+  }catch(e){const fb=getFallback();questions[currentQ]=fb;renderQ(fb);}
+}
+function renderQ(q){
+  document.getElementById('exam-loading').style.display='none';
+  document.getElementById('exam-question').style.display='block';
+  document.getElementById('q-text').textContent=q.question;
+  document.getElementById('q-expl-text').textContent=q.explanation;
+  const opts=document.getElementById('q-opts');
+  opts.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';
+    b.innerHTML=`<div class="opt-letter">${l}</div><span>${q.options[i].replace(/^[A-D]\.\s*/,'')}</span>`;
+    b.onclick=()=>selectOpt(i,q.correct);
+    opts.appendChild(b);
+  });
+  if(answers[currentQ]!==undefined){
+    const s=answers[currentQ];
+    const btns=opts.querySelectorAll('.opt-btn');
+    if(s>=0){btns[s].classList.add(s===q.correct?'correct':'wrong');btns[q.correct].classList.add('correct');}
+    document.getElementById('q-expl').classList.add('show');
+    document.getElementById('btn-skip').style.display='none';
+    if(currentQ<14)document.getElementById('btn-next').style.display='inline-block';
+    else document.getElementById('btn-submit').style.display='inline-block';
+  }
+}
+function selectOpt(idx,correct){
+  if(answers[currentQ]!==undefined)return;
+  answers[currentQ]=idx;
+  const btns=document.querySelectorAll('.opt-btn');
+  btns[idx].classList.add(idx===correct?'correct':'wrong');
+  if(idx!==correct)btns[correct].classList.add('correct');
+  document.getElementById('q-expl').classList.add('show');
+  document.getElementById('btn-skip').style.display='none';
+  if(currentQ<14)document.getElementById('btn-next').style.display='inline-block';
+  else document.getElementById('btn-submit').style.display='inline-block';
+}
+function nextQ(){currentQ++;loadQuestion();}
+function skipQ(){if(answers[currentQ]===undefined)answers[currentQ]=-1;nextQ();}
+
+function submitExam(){
+  clearInterval(timerInt);
+  let correct=0,wrong=0,skipped=0;const reviewed=[];
+  for(let i=0;i<15;i++){
+    const a=answers[i],q=questions[i];
+    if(a===undefined||a===-1){skipped++;reviewed.push({q:q?q.question:'(not reached)',s:'skipped'});}
+    else if(q&&a===q.correct){correct++;reviewed.push({q:q.question,s:'correct'});}
+    else{wrong++;reviewed.push({q:q?q.question:'—',s:'wrong'});}
+  }
+  examScore=Math.round((correct/15)*100);
+  const d=certData[currentCert];
+  const pass=examScore>=(d?d.pass:70);
+  showPage('results');
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skipped').textContent=skipped;
+  document.getElementById('score-pct').textContent=examScore+'%';
+  document.getElementById('result-verdict').textContent=pass?'Congratulations — You Passed!':'Not Yet Passing';
+  document.getElementById('result-sub').textContent=pass?`You scored ${examScore}% on the ${d?d.name:currentCert} exam. Your certificate is ready.`:`You scored ${examScore}%. A score of ${d?d.pass:70}% or higher is required.`;
+  const circ=2*Math.PI*52;const fill=(examScore/100)*circ;
+  document.getElementById('score-ring').setAttribute('stroke-dasharray',fill+' '+(circ-fill));
+  document.getElementById('score-ring').setAttribute('stroke',pass?'#B8902A':'#C0392B');
+  document.getElementById('view-cert-btn').style.display=pass?'inline-block':'none';
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  reviewed.forEach((r,i)=>{
+    if(!r.q)return;
+    const div=document.createElement('div');
+    div.className='review-item '+(r.s==='correct'?'correct':r.s==='wrong'?'wrong':'');
+    div.innerHTML=`<div class="review-item-q">Q${i+1}: ${r.q.substring(0,120)}${r.q.length>120?'…':''}</div><div class="review-item-s">${r.s==='correct'?'✓ Correct':r.s==='wrong'?'✗ Incorrect':'— Skipped'}</div>`;
+    list.appendChild(div);
+  });
+}
+
+// ---- CERTIFICATE ----
+function generateCert(){
+  const d=certData[currentCert];
+  certID=(d?d.prefix:'CRT')+'-'+Math.floor(100000+Math.random()*900000);
+  document.getElementById('cert-holder').textContent=userName||'Professional';
+  document.getElementById('cert-name').textContent=d?d.full:currentCert;
+  const now=new Date();
+  document.getElementById('cert-date-disp').textContent=now.toLocaleString('default',{month:'long'})+' '+now.getFullYear();
+  document.getElementById('cert-id-disp').textContent='ID: '+certID;
+  document.getElementById('cert-id-text').textContent=certID;
+  document.getElementById('cert-tagline').textContent='Having successfully passed the certification examination, demonstrating the required knowledge and professional competencies.';
+  // Add to registry via GitHub API
+  addCertToRegistry(certID,userName,userEmail,d?d.full:currentCert,examScore);
+  showPage('cert');
+}
+
+async function addCertToRegistry(certId,name,email,cert,score){
+  try{
+    const now=new Date().toISOString().split('T')[0];
+    const expiry=new Date(Date.now()+365*24*60*60*1000).toISOString().split('T')[0];
+    // Fetch current certs.json
+    const r=await fetch('https://api.github.com/repos/'+GITHUB_REPO+'/contents/certs.json',{headers:{'Authorization':'token '+GITHUB_TOKEN}});
+    const data=await r.json();
+    const content=JSON.parse(atob(data.content.replace(/\n/g,'')));
+    content.certificates.push({cert_id:certId,user_name:name,user_email:email,certification:cert,score:score,issued_at:now,hosted_until:expiry});
+    const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(content,null,2))));
+    await fetch('https://api.github.com/repos/'+GITHUB_REPO+'/contents/certs.json',{method:'PUT',headers:{'Authorization':'token '+GITHUB_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({message:'Add certificate '+certId,content:encoded,sha:data.sha})});
+  }catch(e){console.log('Registry update:',e);}
+}
+
+function showHostModal(){
+  const modal=document.getElementById('host-modal');
+  modal.style.display='flex';
+  document.getElementById('host-payment-link').href=STRIPE_LINKS.hosting+'?client_reference_id='+certID;
+}
+function hideHostModal(){document.getElementById('host-modal').style.display='none';}
+
+// ---- LOOKUP ----
+async function lookupCert(){
+  const val=document.getElementById('lookup-input').value.trim().toUpperCase();
+  const res=document.getElementById('lookup-result');
+  try{
+    const r=await fetch(CERTS_JSON_URL+'?t='+Date.now());
+    const data=await r.json();
+    const cert=data.certificates.find(c=>c.cert_id===val);
+    if(cert){
+      document.getElementById('lr-name').textContent=cert.user_name;
+      document.getElementById('lr-cert').textContent=cert.certification;
+      document.getElementById('lr-id').textContent=cert.cert_id;
+      document.getElementById('lr-date').textContent=cert.issued_at;
+      document.getElementById('lr-score').textContent=cert.score+'%';
+      document.getElementById('lr-expiry').textContent=cert.hosted_until;
+      res.classList.add('show');
+    }else{
+      res.classList.remove('show');
+      alert('No certificate found for ID "'+val+'". It may not be hosted or the ID may be incorrect.');
+    }
+  }catch(e){
+    res.classList.remove('show');
+    alert('Lookup error: '+e.message);
+  }
+}
+
+function getFallback(){
+  const banks={PMP:{question:"A project manager notices a key stakeholder is not attending status meetings. What should the project manager do FIRST?",options:["A. Escalate to the project sponsor","B. Investigate the reason for the stakeholder's absence","C. Continue meetings without the stakeholder","D. Remove the stakeholder from the communication plan"],correct:1,explanation:"The project manager should first investigate why the stakeholder is absent before taking action. Understanding root cause allows for an appropriate response."},CSM:{question:"A Scrum Master notices the team consistently fails to complete all Sprint Backlog items. What should the Scrum Master do?",options:["A. Extend the Sprint","B. Facilitate a retrospective to improve forecasting","C. Remove items to make it easier","D. Assign tasks to specific team members"],correct:1,explanation:"The Scrum Master facilitates improvement through retrospectives, not by dictating solutions. The team should inspect their forecasting process."},SecurityPlus:{question:"Which attack involves intercepting communications between two parties without either party knowing?",options:["A. Phishing","B. Man-in-the-middle","C. SQL injection","D. Denial of service"],correct:1,explanation:"A man-in-the-middle attack occurs when an attacker secretly intercepts and potentially alters communications between two parties."},CISSP:{question:"Which BEST describes the principle of least privilege?",options:["A. Maximum permissions for any possible task","B. Only minimum access rights necessary for job functions","C. Equal access to all systems","D. Privileges based on seniority"],correct:1,explanation:"Least privilege means users and systems have only the minimum access strictly necessary. This minimizes the attack surface."},AWS:{question:"A company needs a globally distributed static website with high availability. Which combination is MOST appropriate?",options:["A. EC2 instances with Route 53","B. S3 static hosting with CloudFront","C. Elastic Beanstalk with auto-scaling","D. Lambda behind an ALB"],correct:1,explanation:"S3 with CloudFront is the standard solution. S3 provides durable storage while CloudFront delivers content with low latency globally."},LSS:{question:"In DMAIC, during which phase does a team validate the implemented solution achieved the desired improvement?",options:["A. Define","B. Measure","C. Analyze","D. Control"],correct:3,explanation:"The Control phase validates the solution and implements control plans to sustain improvements long-term."},PRINCE2:{question:"In PRINCE2, who is ultimately accountable for project success and represents business interests?",options:["A. Project Manager","B. Senior User","C. Executive","D. Project Assurance"],correct:2,explanation:"The Executive is the single individual ultimately accountable for the project, chairing the Project Board."},CBPP:{question:"Which BEST describes an 'as-is' process map?",options:["A. The future desired state","B. The current state as it actually operates","C. A theoretical optimal flow","D. A high-level strategic overview"],correct:1,explanation:"An 'as-is' process map documents the current state as it actually operates today, contrasted with the 'to-be' future state."},CPMAI:{question:"What does CRISP-DM stand for in AI project management?",options:["A. Critical Risk Intelligence for Strategic Project Data Management","B. Cross-Industry Standard Process for Data Mining","C. Certified Resource Integration System for Project Data Models","D. Continuous Research Integration for Strategic Project Delivery"],correct:1,explanation:"CRISP-DM stands for Cross-Industry Standard Process for Data Mining, a widely used methodology in data science and AI projects."}};
+  return banks[currentCert]||banks['PMP'];
+}
+</script>
+</body>
+</html>
