@@ -1,0 +1,31 @@
+{
+  "certificates": [
+    {
+      "cert_id": "CPM-748291",
+      "user_name": "Justin Martin",
+      "user_email": "Justin.Martin789@gmail.com",
+      "certification": "Project Management Professional (PMP)",
+      "score": 92,
+      "issued_at": "2026-05-23",
+      "hosted_until": "2027-05-23"
+    },
+    {
+      "cert_id": "CAI-583047",
+      "user_name": "Justin Martin",
+      "user_email": "Justin.Martin789@gmail.com",
+      "certification": "Certified Project Manager — AI (CPMAI)",
+      "score": 88,
+      "issued_at": "2026-05-23",
+      "hosted_until": "2027-05-23"
+    },
+    {
+      "cert_id": "CCB-916374",
+      "user_name": "Justin Martin",
+      "user_email": "Justin.Martin789@gmail.com",
+      "certification": "Certified Business Process Professional (CBPP)",
+      "score": 90,
+      "issued_at": "2026-05-23",
+      "hosted_until": "2027-05-23"
+    }
+  ]
+}
